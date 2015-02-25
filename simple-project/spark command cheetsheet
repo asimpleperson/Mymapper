@@ -1,7 +1,23 @@
 run spark:
-cd to spark dir
+if you are the master, cd to spark dir
 ./sbin/start-master.sh
+
+if you are not the master, cd to spark dir
+./sbin/start-slave.sh
 
 create worker:
 ./bin/spark-class org/apache/spark.deploy.worker.Worker <master URL>
+
+compile our testing app, cd to simple-project dir
+mvn package
+(if mvn is not installed, export PATH and JAVA-HOME according to README.md)
+
+run our small testing app, cd to spark dir
+./bin/spark-submit \
+--class SimpleApp \
+--master <master URL> \
+--executor-memory <memory size> \
+/homes/sun224/SeniorDesign/Mamapper/simple-project/target/simple-project-1.0.jar
+
+
 
