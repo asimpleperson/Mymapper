@@ -82,7 +82,7 @@
 
            <select class="form-control" name="searchby" onchange="dropdownTest(this.value)">
              <option value="defaultopts" selected>--Search by--</option>
-             <option value="events">Events</option>
+             <option value="restaurant">Events</option>
              <option value="users">Users</option>
              <option value="pictures">Pictures</option>
            </select>
