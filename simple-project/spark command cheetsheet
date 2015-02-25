@@ -1,0 +1,7 @@
+run spark:
+cd to spark dir
+./sbin/start-master.sh
+
+create worker:
+./bin/spark-class org/apache/spark.deploy.worker.Worker <master URL>
+
