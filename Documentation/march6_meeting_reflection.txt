@@ -1,0 +1,18 @@
+March 6 meeting reflection:
+
+For scientific presentation
+ - each slide should be 6 by 6 (within 6 bullet points by 6 words each)
+ - Slides have white background
+ - include more pictures in slides other than texts
+
+For the moving object implementation
+ - Use Minnesota Traffic Generator http://mntg.cs.umn.edu/tg/index.php to generate moving objects. They will return data in OSM type by emailing you a link the next business day.
+ - Since SPARK won't actually support the modifucation of data. They are suggesting us to have another database take charge of the moving object updating and use SPARK only on handling queries. 
+
+For UI layer
+ - Support on-moving search results on the UI level, that is while moving the blue point, the search results should dynamically reflect based on the blue point's location
+ - support the NEAREST option in search bar
+ - Rank the search result from the nearest to the farthest and also include an area on the interface to show the result textually from the nearest result to the farthest. Just like Google map search results.
+ - Allow the user to input their own keyword and if they match OSM type, return with results. If not, return nothing.
+ - Allow the user to search for combination of OSM type, such as hotels and gas stations.
+ - Register each search and update each registering queries on location change. For example if the user first search hotels within 2 miles and then search gas stations within 1 miles. We would register hotel-within-2-mile as search1 and show results in red points; register gasstation-within-1-mile as search2 and show results as yellow points. When the blue point change, we update red points and yellow points together on the map.
