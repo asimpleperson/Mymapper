@@ -1,4 +1,5 @@
 <%@ page import="java.sql.Connection" %>
+<%@ page import="java.util.*" %>
 <%@ page import="org.apache.hadoop.hive.jdbc.*" %>
 <%@ page import="java.sql.DriverManager" %>
 <%@ page import="java.sql.ResultSet" %>
@@ -52,7 +53,7 @@
 <script src="http://www.openlayers.org/api/OpenLayers.js"  type="text/javascript"></script>
 <script src="http://openlayers.org/en/v3.2.1/build/ol.js" type="text/javascript"></script>
 <script type="text/javascript" src="http://maplib.khtml.org/khtml.maplib/khtml_all.js"> </script>
-<title>CS490 My Mapper</title>
+<title>Hi!CS490 My Mapper</title>
 
 <script src="js/bootstrap.min.js"></script>
 <script src="js/jquery-2.1.1.min.js"></script>
@@ -61,6 +62,31 @@
 
 </head>
 
+<%!
+
+	static test.classes.Job job = new test.classes.Job();
+	// test test
+	Connection con = null;
+	
+	public void jspInit() {
+		if (job == null) {
+			//job = new test.classes.Job();
+		}
+		
+		if (con == null) {
+			try {
+				// make sure the jdbc driver for hive is present in the classpath
+				String driverName = "org.apache.hive.jdbc.HiveDriver";
+				Class.forName(driverName);			
+				// connect to database
+				con = DriverManager.getConnection("jdbc:hive2://sslab02.cs.purdue.edu:10000", "bpastene", "");
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
+	}
+%>
 
 <script>
 	
@@ -70,6 +96,7 @@
 	
 	// declare the map layer used to store the markers for points of interest 
 	var poiLayer = new OpenLayers.Layer.Vector("POIs");
+	
 
 </script>
 
@@ -126,47 +153,63 @@
 			out.print("var prevCenterLon = 0;\n");
 		}
 		
+		
 		// if the user previously specified the type of location, the range, and then hit submit, find the relevant locations
 		if (typeChoice != null && typeChoice.compareTo("defaultopts") != 0 && rangeChoice != null && rangeChoice.compareTo("defaultopts") != 0) {
 		
-			// make sure the jdbc driver for hive is present in the classpath
-			String driverName = "org.apache.hive.jdbc.HiveDriver";
-			Class.forName(driverName);
+			if (typeChoice.equals("police") || typeChoice.equals("bus") || typeChoice.equals("taxi")) {
 			
-			// connect to database
-			Connection con = DriverManager.getConnection("jdbc:hive2://sslab02.cs.purdue.edu:10000", "bpastene", "");
-			
-			
-			double dist = Double.valueOf(rangeChoice);
-			String query;
-			// query the db for locations of the specified type within the specified range, the sql query uses trigonometry to calculate the distance between two geographic pair of coordinates
-			if (typeChoice.compareTo("hotel") == 0) {
-				// hotel can either be a hotel or motel, so query differently based on that
-				query = String.format("select * from locations as loc where (loc.type = \"hotel\" or loc.type = \"motel\") and (ACOS(SIN(PI()*(%f)/180.0)*SIN(PI()*(loc.lat)/180.0)+COS(PI()*(%f)/180.0)*COS(PI()*(loc.lat)/180.0)*COS(PI()*(loc.lon)/180.0-PI()*(%f)/180.0))*6371) <= %f", userLat, userLat, userLon, dist);
+				double dist = Double.valueOf(rangeChoice);
+				List<String> list = job.getActors(userLat, userLon, dist);
+				for (String fieldString: list) {
+					if (fieldString != null) {
+						String fields[] = fieldString.split("\\s+");					
+						int actorType = Integer.parseInt(fields[1]);
+						
+						double poiLat = Double.parseDouble(fields[3]);
+						double poiLon = Double.parseDouble(fields[2]);
+						
+						if ((actorType == 0 && typeChoice.equals("police")) || (actorType == 1 && typeChoice.equals("bus")) || (actorType == 2 && typeChoice.equals("taxi"))) {
+							out.print(String.format("var tempLoc = new OpenLayers.LonLat( %f , %f ).transform( fromProjection, toProjection);\n", poiLon, poiLat));
+							out.print("var tempPoint = new OpenLayers.Geometry.Point( tempLoc.lon, tempLoc.lat );\n");
+							out.print(String.format("var poiFeature = new OpenLayers.Feature.Vector(tempPoint, {userFeature: false, Name:\"%s\", Type:'%s'}, {externalGraphic: 'img/marker2.png', graphicHeight: 25, graphicWidth: 16});\n", "", typeChoice));			
+							out.print("poiLayer.addFeatures(poiFeature);\n");
+						}
+					}
+				}
 			} else {
-				query = String.format("select * from locations as loc where (loc.type = \"%s\") and (ACOS(SIN(PI()*(%f)/180.0)*SIN(PI()*(loc.lat)/180.0)+COS(PI()*(%f)/180.0)*COS(PI()*(loc.lat)/180.0)*COS(PI()*(loc.lon)/180.0-PI()*(%f)/180.0))*6371) <= %f", typeChoice, userLat, userLat, userLon, dist);
-			}
-	
-			// query the db
-			Statement ps = con.createStatement();
-			long start = System.currentTimeMillis();
-			ResultSet rs = ps.executeQuery(query);
-			long end = System.currentTimeMillis();
-			
-			// iterate through the results
-			while (rs.next()) {
-				String name = rs.getString("name");
-				double poiLat = rs.getDouble("lat");
-				double poiLon = rs.getDouble("lon");
+		
+				double dist = Double.valueOf(rangeChoice);
+				String query;
+				// query the db for locations of the specified type within the specified range, the sql query uses trigonometry to calculate the distance between two geographic pair of coordinates
+				if (typeChoice.compareTo("hotel") == 0) {
+					// hotel can either be a hotel or motel, so query differently based on that
+					query = String.format("select * from locations as loc where (loc.type = \"hotel\" or loc.type = \"motel\") and (ACOS(SIN(PI()*(%f)/180.0)*SIN(PI()*(loc.lat)/180.0)+COS(PI()*(%f)/180.0)*COS(PI()*(loc.lat)/180.0)*COS(PI()*(loc.lon)/180.0-PI()*(%f)/180.0))*6371) <= %f", userLat, userLat, userLon, dist);
+				} else {
+					query = String.format("select * from locations as loc where (loc.type = \"%s\") and (ACOS(SIN(PI()*(%f)/180.0)*SIN(PI()*(loc.lat)/180.0)+COS(PI()*(%f)/180.0)*COS(PI()*(loc.lat)/180.0)*COS(PI()*(loc.lon)/180.0-PI()*(%f)/180.0))*6371) <= %f", typeChoice, userLat, userLat, userLon, dist);
+				}
+		
+				// query the db
+				Statement ps = con.createStatement();
+				long start = System.currentTimeMillis();
+				ResultSet rs = ps.executeQuery(query);
+				long end = System.currentTimeMillis();
 				
-				// for each resulting location, create an OpenLayer feature for it and add it to the poiLayer
-				out.print(String.format("var tempLoc = new OpenLayers.LonLat( %f , %f ).transform( fromProjection, toProjection);\n", poiLon, poiLat));
-				out.print("var tempPoint = new OpenLayers.Geometry.Point( tempLoc.lon, tempLoc.lat );\n");
-				out.print(String.format("var poiFeature = new OpenLayers.Feature.Vector(tempPoint, {userFeature: false, Name:\"%s\", Type:'%s'}, {externalGraphic: 'img/marker2.png', graphicHeight: 25, graphicWidth: 16});\n", name, rs.getString("type")));
+				// iterate through the results
+				while (rs.next()) {
+					String name = rs.getString("name");
+					double poiLat = rs.getDouble("lat");
+					double poiLon = rs.getDouble("lon");
 					
-				out.print("poiLayer.addFeatures(poiFeature);\n");
+					// for each resulting location, create an OpenLayer feature for it and add it to the poiLayer
+					out.print(String.format("var tempLoc = new OpenLayers.LonLat( %f , %f ).transform( fromProjection, toProjection);\n", poiLon, poiLat));
+					out.print("var tempPoint = new OpenLayers.Geometry.Point( tempLoc.lon, tempLoc.lat );\n");
+					out.print(String.format("var poiFeature = new OpenLayers.Feature.Vector(tempPoint, {userFeature: false, Name:\"%s\", Type:'%s'}, {externalGraphic: 'img/marker2.png', graphicHeight: 25, graphicWidth: 16});\n", name, rs.getString("type")));
+						
+					out.print("poiLayer.addFeatures(poiFeature);\n");
+				}
+				
 			}
-			
 		}
 		
 		
@@ -197,19 +240,22 @@
                     <input type="hidden" id="TypeChoice" name="TypeChoice" value="" />
 
                         <select id = "TypeSelect" class="form-control" name="select-type-of-interest" onchange="dropdownTest(this.value)">
-                            <option value="defaultopts" selected>--Type of interests--</option>
-                            <option value="restaurant">Restaurant</option>
-                            <option value="fast_food">Fast Food</option>
-                            <option value="library">Library</option>
-                            <option value="school">School</option>
-                            <option value="supermarket">Grocery Store</option>
-                            <option value="hotel">Hotel</option>
-                            <option value="fuel">Gas Station</option>
-                            <option value="parking">Parking Lot</option>
+                            <option value="defaultopts" id="defaultopts">--Type of interests--</option>
+                            <option value="restaurant" id="restaurant">Restaurant</option>
+                            <option value="fast_food" id="fast_food">Fast Food</option>
+                            <option value="library" id="library">Library</option>
+                            <option value="school" id="school">School</option>
+                            <option value="supermarket" id="supermarket">Grocery Store</option>
+                            <option value="hotel" id="hotel">Hotel</option>
+                            <option value="fuel" id="fuel">Gas Station</option>
+                            <option value="parking" id="parking">Parking Lot</option>
+							<option value="police" id="police">Police Car</option>
+							<option value="bus" id="bus">Bus</option>
+							<option value="taxi" id="taxi">Taxi</option>
                         </select>
                 </div>
     
-            
+				
         
             
                 <div class="form-group">
@@ -222,8 +268,6 @@
                             <option value="3.21869">Within 2 Miles</option>
                         </select>
                 </div>
-
-              
     
 				<!--Search Button-->
 				<button type="button" class="btn btn-default btn-lg" onclick="search()">Search</button>
@@ -238,6 +282,25 @@
 				<input type="hidden" name="prevCenterLat" id="prevCentLat" value="" />
 				
 				<script>
+				
+					<%
+						if (typeChoice != null) {
+							out.print("			var selectOption1 = document.getElementById(\"TypeSelect\");\n");
+							out.print("			selectOption1.value = \"" + typeChoice + "\";\n");
+						} else {
+							out.print("			var selectOption1 = document.getElementById(\"TypeSelect\");\n");
+							out.print("			selectOption1.value = \"defaultopts\";\n");
+						}
+						
+						if (rangeChoice != null) {
+							out.print("			var selectOption2 = document.getElementById(\"RangeSelect\");\n");
+							out.print("			selectOption2.value = \"" + rangeChoice + "\";\n");
+						} else {
+							out.print("			var selectOption2 = document.getElementById(\"RangeSelect\");\n");
+							out.print("			selectOption2.value = \"defaultopts\";\n");
+						}
+					%>
+				
 					function search() {
 						// this function is called when the user hits submit
 					
@@ -397,6 +460,8 @@
 					
 					// reactivate the drag listener so the user marker (the blue marker) can be dragged
 					drag.activate();
+				} else {
+					console.log("unselected user loc\n");
 				}
 			}
 
