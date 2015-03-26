@@ -1,0 +1,64 @@
+<html>
+<head>
+<title></title>
+<script language="javascript">
+
+var search_option = new Array("Hotel - 2 miles", "Library - 1 mile", "Gas Station - 0.5 mile"); 
+
+//create boxes according to the string passed to this function
+function createchkboxes()
+{
+    var length = search_option.length;
+    alert("number of registered queries = "+length);
+    for (var i = 0; i < length; i++) {
+        var label = document.createElement('label');
+        var br = document.createElement('br');
+        var alabel = document.getElementById('div1');
+        var last = alabel[alabel.length - 1];
+        label.htmlFor = "search_option_"+i;
+        label.appendChild(Createcheckbox("search_option_"+i, search_option[i]));
+        label.appendChild(document.createTextNode(search_option[i]));
+        label.appendChild(br);
+        document.getElementById('div1').appendChild(label);               
+    }
+}
+
+function Createcheckbox(chkboxid, chkboxvalue) {
+    var ischecked = 0;//even value means unchecked, odd value means checked
+    var checkbox = document.createElement('input');
+    checkbox.type = "checkbox";
+    
+    checkbox.onclick = function(){
+        ischecked = ischecked+1;     
+            if (ischecked%2==0){
+                alert("you just uncliked on "+checkbox.value);
+            }
+            else{
+                alert("you just clicked on "+checkbox.value);
+            }
+    };
+
+    //var theval = checkbox.onclick.getValue();
+    //alert(theval);
+    //if (theval == true){
+    //    alert("you just clicked on "+checkbox.value);
+    //}
+    //else{
+    //    alert("you just uncliked on"+checkbox.value);
+   // }
+    
+           
+    checkbox.id = chkboxid;
+    checkbox.value = chkboxvalue;
+    return checkbox;
+}
+
+</script>
+</head>
+<body>
+<form>
+<input type="button" id="btncreate" value="Create" onclick="createchkboxes()"/>
+<Div id='div1'>
+</div>
+</form>
+</body>
