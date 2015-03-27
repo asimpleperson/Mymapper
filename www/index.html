@@ -27,6 +27,12 @@
 <script src="js/jquery-2.1.1.min.js"></script>
 <script src="js/bootstrap-select.js"></script>
 
+<title>jQuery UI Autocomplete - Default functionality</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="/resources/demos/style.css">
+
 
 </head>
 
@@ -48,6 +54,29 @@
 	var movingSearch = false;
 	
 </script>
+
+</script>
+
+  <script>
+  $(function() {
+    var availableTags = [
+      "Restaurant",
+      "Fast Food",
+      "Library",
+      "School",
+      "Grocery Store",
+      "Hotel",
+      "Gas Station",
+      "Parking Lot",
+      "Police Car",
+	"Bus",
+	"Taxi",
+        ];
+    $( "#tags" ).autocomplete({
+      source: availableTags
+    });
+  });
+  </script>
 
 <body onload="initialize()">
 
@@ -100,6 +129,17 @@
                             <option value="3.21869">Within 2 Miles</option>
                         </select>
                 </div>
+
+		 <div class="form-group">
+		Customize your search:<br>
+                </div>
+
+		<div class="form-group">
+				<input type="text" id="tags" name="customsearch" value="">
+				<br>
+		</div>
+
+
     
 				<!--Search Button-->
 				<button type="button" class="btn btn-default btn-lg" onclick="search()">Search</button>
@@ -117,13 +157,31 @@
 				
 					function search() {
 						// this function is called when the user hits submit
-						
-						
-					
+						// var typeSelect = document.getElementById("TypeSelect");
+						//var  typeValue = typeSelect.options[typeSelect.selectedIndex].value;
 						// assign the type of location the user chose to the hidden input "TypeChoice"
+						var result=document.getElementById("tags").value;
+						var bol=0;
 						var typeSelect = document.getElementById("TypeSelect");
-						var typeValue = typeSelect.options[typeSelect.selectedIndex].value;
-						
+
+						//var typeValue = typeSelect.options[typeSelect.selectedIndex].value;
+						var typeValue;
+						var len=typeSelect.length;
+						var theValue;
+							for(var i=0;i<len;i++)
+						{
+							if(typeSelect.options[i].text == result)
+							{
+								bol=1;
+								theValue=typeSelect.options[i].value;
+							}
+						}
+						if(result.length<1 || bol == 0){
+							typeValue = typeSelect.options[typeSelect.selectedIndex].value;
+						}else{
+							typeValue = theValue ;
+						}
+
 						if (typeValue == "police" || typeValue == "taxi" || typeValue == "bus") {
 							movingSearch = true;
 						} else {
@@ -140,7 +198,7 @@
 						
 						// query the servlet for the information requested
 						var xmlHttp = new XMLHttpRequest();
-						xmlHttp.open( "POST", "/ServletTest", false );						
+						xmlHttp.open( "POST", "ServletTest", false );						
 						var params = "TypeChoice=" + typeValue + "&RangeChoice=" + rangeValue + "&userLat=" + tempPos.lat + "&userLon=" + tempPos.lon;
 						xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");						
 						xmlHttp.send( params );
@@ -175,7 +233,6 @@
 								} else {
 									var poiFeature = new OpenLayers.Feature.Vector(tempPoint, {userFeature: false, Name:poiName, Type:poiType}, {externalGraphic: "img/" + typeValue + ".png", graphicHeight: 16, graphicWidth: 16});
 								}
-								
 								
 								poiLayer.addFeatures(poiFeature);
 							}
