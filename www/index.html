@@ -157,14 +157,11 @@
 				
 					function search() {
 						// this function is called when the user hits submit
-						// var typeSelect = document.getElementById("TypeSelect");
-						//var  typeValue = typeSelect.options[typeSelect.selectedIndex].value;
-						// assign the type of location the user chose to the hidden input "TypeChoice"
+						
+						//Get the user input. If it is empty or not a valid input, pick the selection from the select list. If it is a valid 						input, change typeValue to this input value  
 						var result=document.getElementById("tags").value;
 						var bol=0;
 						var typeSelect = document.getElementById("TypeSelect");
-
-						//var typeValue = typeSelect.options[typeSelect.selectedIndex].value;
 						var typeValue;
 						var len=typeSelect.length;
 						var theValue;
