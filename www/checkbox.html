@@ -8,6 +8,13 @@ var search_option = new Array("Hotel - 2 miles", "Library - 1 mile", "Gas Statio
 //create boxes according to the string passed to this function
 function createchkboxes()
 {
+    //first delete all before creating
+    
+    var div = document.getElementById('div1'), child;
+    while(child = div.firstChild){
+       div.removeChild(child);
+    }
+
     var length = search_option.length;
     alert("number of registered queries = "+length);
     for (var i = 0; i < length; i++) {
@@ -37,21 +44,14 @@ function Createcheckbox(chkboxid, chkboxvalue) {
                 alert("you just clicked on "+checkbox.value);
             }
     };
-
-    //var theval = checkbox.onclick.getValue();
-    //alert(theval);
-    //if (theval == true){
-    //    alert("you just clicked on "+checkbox.value);
-    //}
-    //else{
-    //    alert("you just uncliked on"+checkbox.value);
-   // }
-    
+   
            
     checkbox.id = chkboxid;
     checkbox.value = chkboxvalue;
     return checkbox;
 }
+
+
 
 </script>
 </head>
