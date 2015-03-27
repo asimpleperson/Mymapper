@@ -140,7 +140,7 @@
 						
 						// query the servlet for the information requested
 						var xmlHttp = new XMLHttpRequest();
-						xmlHttp.open( "POST", "ServletTest", false );						
+						xmlHttp.open( "POST", "/ServletTest", false );						
 						var params = "TypeChoice=" + typeValue + "&RangeChoice=" + rangeValue + "&userLat=" + tempPos.lat + "&userLon=" + tempPos.lon;
 						xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");						
 						xmlHttp.send( params );
