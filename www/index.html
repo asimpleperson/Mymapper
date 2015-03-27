@@ -1,3 +1,9 @@
+<!-- need to download apache hive @ https://hive.apache.org/downloads.html and add all of its jars, along with spark's jars, to Tomcat's class loader (in conf/cataline.properties)
+	example:
+		shared.loader=/homes/bpastene/cs490/apache_hive/lib/*.jar, /homes/bpastene/spark/spark-1.2.0-bin-hadoop2.4/lib/*.jar
+-->
+
+
 <head>
 <meta name="CS490" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
@@ -16,19 +22,38 @@
   }
 
 </style>
+
+
+<script src="http://www.openlayers.org/api/OpenLayers.js"  type="text/javascript"></script>
 <script src="http://openlayers.org/en/v3.2.1/build/ol.js" type="text/javascript"></script>
-<title>CS490 My Mapper</title>
-
-
+<script type="text/javascript" src="http://maplib.khtml.org/khtml.maplib/khtml_all.js"> </script>
+<title>Hi!CS490 My Mapper</title>
 
 <script src="js/bootstrap.min.js"></script>
 <script src="js/jquery-2.1.1.min.js"></script>
 <script src="js/bootstrap-select.js"></script>
 
 
-
-
 </head>
+
+<script>
+	
+	// declare different types of coordinate projections, the browser uses EPSG:4326 but OpenLayers uses ESPG:900913
+	var fromProjection = new OpenLayers.Projection("EPSG:4326");   // Transform from WGS 1984
+	var toProjection   = new OpenLayers.Projection("EPSG:900913"); // to Spherical Mercator Projection
+	
+	// declare the map layer used to store the markers for points of interest 
+	var poiLayer = new OpenLayers.Layer.Vector("POIs");
+	
+	var userLat = 40.4258333;
+	var userLon = -86.9080556;
+	var zoom = 15;
+	
+	var position = new OpenLayers.LonLat( userLon , userLat ).transform( fromProjection, toProjection );
+	
+	var movingSearch = false;
+	
+</script>
 
 <body onload="initialize()">
 
@@ -48,42 +73,133 @@
         <!-- Collect the search options -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
   
-            <form class="navbar-form navbar-left" onsubmit=" return false;">
+            <form id = "SearchForm" class="navbar-form navbar-left" method="post">
                 <div class="form-group">
-                    <input type="hidden" id="TypeChoice" >
+                    <input type="hidden" id="TypeChoice" name="TypeChoice" value="" />
 
-                        <select class="form-control" name="select-type-of-interest" onchange="dropdownTest(this.value)">
-                            <option value="defaultopts" selected>--Type of interests--</option>
-                            <option value="Type-Restaurant">Restaurant</option>
-                            <option value="Type-Hotel">Hotel</option>
-                            <option value="Type-GasStation">Gas Station</option>
-                            <option value="Type-ParkingLot">Parking Lot</option>
-                            <option value="Type-PoliceCar">Police Car</option>
-                            <option value="Type-Taxi">Taxi</option>
+                        <select id = "TypeSelect" class="form-control" name="select-type-of-interest" onchange="dropdownTest(this.value)">
+                            <option value="defaultopts" id="defaultopts">--Type of interests--</option>
+                            <option value="restaurant" id="restaurant">Restaurant</option>
+                            <option value="fast_food" id="fast_food">Fast Food</option>
+                            <option value="library" id="library">Library</option>
+                            <option value="school" id="school">School</option>
+                            <option value="supermarket" id="supermarket">Grocery Store</option>
+                            <option value="hotel" id="hotel">Hotel</option>
+                            <option value="fuel" id="fuel">Gas Station</option>
+                            <option value="parking" id="parking">Parking Lot</option>
+							<option value="police" id="police">Police Car</option>
+							<option value="bus" id="bus">Bus</option>
+							<option value="taxi" id="taxi">Taxi</option>
                         </select>
-                    </input>
                 </div>
     
-            </form>
+				
         
             
-            <form class="navbar-form navbar-left" onsubmit=" return false;">
                 <div class="form-group">
-                    <input type="hidden" id="RangeChoice" >
+                    <input type="hidden" id="RangeChoice" name="RangeChoice" value=" " />
 
-                            <select class="form-control" name="select-range" onchange="dropdownTest(this.value)">
+                            <select id = "RangeSelect" class="form-control" name="select-range" onchange="dropdownTest(this.value)">
                             <option value="defaultopts" selected>--Range--</option>
-                            <option value="Range-half">Within half a Mile</option>
-                            <option value="Range-one">Within 1 Mile</option>
-                            <option value="Range-two">Within 2 Miles</option>
+                            <option value="0.804672">Within half a Mile</option>
+                            <option value="1.60934">Within 1 Mile</option>
+                            <option value="3.21869">Within 2 Miles</option>
                         </select>
-                    </input>
                 </div>
-
-            </form>   
     
-            <!--Search Button-->
-            <button type="button" class="btn btn-default btn-lg" onclick="search()">Search</button>
+				<!--Search Button-->
+				<button type="button" class="btn btn-default btn-lg" onclick="search()">Search</button>
+				
+				<input type="hidden" name="userLat" id="userLat" />
+				<input type="hidden" name="userLon" id="userLon" />
+				
+				<input type="hidden" name="prevZoom" id ="prevZoom" value="" />
+				
+				<input type="hidden" name="prevCenterLon" id="prevCentLon" value="" />
+				
+				<input type="hidden" name="prevCenterLat" id="prevCentLat" value="" />
+				
+				<script>				
+				
+					function search() {
+						// this function is called when the user hits submit
+						
+						
+					
+						// assign the type of location the user chose to the hidden input "TypeChoice"
+						var typeSelect = document.getElementById("TypeSelect");
+						var typeValue = typeSelect.options[typeSelect.selectedIndex].value;
+						
+						if (typeValue == "police" || typeValue == "taxi" || typeValue == "bus") {
+							movingSearch = true;
+						} else {
+							movingSearch = false;
+						}
+						
+						// assign the range the user chose to the hidden input "RangeChoice"
+						var rangeSelect = document.getElementById("RangeSelect");
+						var rangeValue = rangeSelect.options[rangeSelect.selectedIndex].value;
+						
+						// get the user's current location
+						var tempPos = new OpenLayers.LonLat( position.lon , position.lat ).transform(toProjection, fromProjection);
+			
+						
+						// query the servlet for the information requested
+						var xmlHttp = new XMLHttpRequest();
+						xmlHttp.open( "POST", "ServletTest", false );						
+						var params = "TypeChoice=" + typeValue + "&RangeChoice=" + rangeValue + "&userLat=" + tempPos.lat + "&userLon=" + tempPos.lon;
+						xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");						
+						xmlHttp.send( params );
+						
+						var responseText = xmlHttp.responseText;
+						var points = responseText.split( "\n" );
+						poiLayer.removeAllFeatures();
+						poiLayer.addFeatures(userLoc);
+						for (var i = 0; i < points.length; ++i) {
+							if (points[i] != "") {
+								//console.log("found response: \"" + points[i] + "\"\n");
+								var line = points[i];
+								var fields = line.split("~");
+								if (fields.length == 3) {
+									var poiName = "";
+									var poiType = fields[0];
+									var poiLat = fields[1];
+									var poiLon = fields[2];
+								} else if (fields.length == 4) {
+									var poiName = fields[0];
+									var poiType = fields[1];
+									var poiLat = fields[2];
+									var poiLon = fields[3];							
+								}
+								
+								var tempLoc = new OpenLayers.LonLat( poiLon , poiLat ).transform( fromProjection, toProjection);
+								var tempPoint = new OpenLayers.Geometry.Point( tempLoc.lon, tempLoc.lat );
+								
+								
+								if (typeValue == "police" || typeValue == "taxi" || typeValue == "bus") {
+									var poiFeature = new OpenLayers.Feature.Vector(tempPoint, {userFeature: false, Name:poiName, Type:poiType}, {externalGraphic: "img/" + typeValue + ".png", graphicHeight: 25, graphicWidth: 25});
+								} else {
+									var poiFeature = new OpenLayers.Feature.Vector(tempPoint, {userFeature: false, Name:poiName, Type:poiType}, {externalGraphic: "img/" + typeValue + ".png", graphicHeight: 16, graphicWidth: 16});
+								}
+								
+								
+								poiLayer.addFeatures(poiFeature);
+							}
+						}
+						
+						// submit the form, which reloads the page and queries the database based on the information saved to the hidden parameters
+						// the user's location, map's zoom, and map's center is saved and restored on submission
+						//var form = document.getElementById("SearchForm");
+						//form.submit();
+					}
+					
+					window.setInterval(function() {
+						if (movingSearch) {
+							search();
+						}
+					}, 1000);
+				</script>
+			</form> 
         
             <!--
             <button type="button" class="btn btn-default btn-lg" onclick="testloc()">Loc test 1</button>
@@ -97,62 +213,99 @@
     <div id="map"></div>
 
 
-    
 <script type="text/javascript">
-function createOverlay(stopEvent, insertFirst) {
-                return new ol.Overlay({
-                    element: $('<div id="myOverlay" class="overlay">I\'m an overlay placed at: <span id="coordinate" class="label label-primary">0, 0</span></div> '),
-                    positioning: 'top-right',
-                    stopEvent: stopEvent,
-                    insertFirst: insertFirst
-                });
-            }
+			
+			// create the map
+			map = new OpenLayers.Map("map");
+			// add the base layer to the map, using OpenLayer's map images
+			// this can be changed to use GoogleMap's images, or MapQuest images, etc
+			map.addLayer(new OpenLayers.Layer.OSM());
+			
+	
+			map.setCenter( position, zoom );
 
-            function setCoordinateAndShow(coordinate) {
-                // Set position
-                overlay.setPosition(coordinate);
-                // Update overlay label
-                $('#coordinate').text(ol.coordinate.toStringXY(ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326'), 2));
-                // Show overlay
-                $(overlay.getElement()).show(); 
-            }
+			
+			// create a point for the user's location and add it to the poiLayer
+			var point = new OpenLayers.Geometry.Point( position.lon, position.lat );
+			var userLoc = new OpenLayers.Feature.Vector(point, {userFeature: true}, {externalGraphic: 'img/marker.png', graphicHeight: 25, graphicWidth: 16});
+			poiLayer.addFeatures(userLoc);
+			
+			// add the poiLayer to the map on top of the base layer
+			map.addLayer(poiLayer);
+			
+			// define a drag listener for poiLayer
+			var drag=new OpenLayers.Control.DragFeature(poiLayer,{    
+				 'onDrag':function(feature, pixel){
+						// if the feature that's being dragged is the user (the blue marker, not a red marker)
+						if (feature.attributes.userFeature == true) {
+							// drag the user's position
+							//position = new OpenLayers.LonLat( feature.geometry.x  , feature.geometry.y ).transform( toProjection, fromProjection);
+							//position = new OpenLayers.LonLat( feature.geometry.x  , feature.geometry.y ).transform( fromProjection, toProjection );
+							position = new OpenLayers.LonLat( feature.geometry.x  , feature.geometry.y );
+						}
+				 }
+			});
+			
+			var click
+			
+			// define a select listener for poiLayer, if a feature is hovered over, call onPopupFeatureSelect(), if it's un-hovered-over, call onPopupFeatureUnselect()
+			var selectControl  = new OpenLayers.Control.SelectFeature(poiLayer,{				
+				onSelect: onPopupFeatureSelect,
+				onUnselect: onPopupFeatureUnselect,
+				hover: true
+			});
+			
+			// add the drag listener to the map
+			map.addControl(drag);
+			drag.activate();
+			
+			// add the select listener to the map
+			map.addControl(selectControl );
+			selectControl.activate();
+			
+			
+			function onPopupFeatureSelect(feature) {
+				// if the feature being hovered-over is not the user
+				if (feature.attributes.userFeature == false) {
+					// don't let static markers be dragged by disabling the drag listener when a static marker is selected
+					drag.deactivate();
+					
+					if (feature.attributes.Type != "0" && feature.attributes.Type != "1" && feature.attributes.Type != "2") {
+						// display a pop-up that lists the location's name and type
+						var popup = new OpenLayers.Popup.FramedCloud("popup",
+							OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
+							null,
+							"Name: " + feature.attributes.Name + "<br>Type: " + feature.attributes.Type,
+							null,
+							true,
+							null
+						);
+						popup.autoSize = true;
+						popup.maxSize = new OpenLayers.Size(400,800);
+						popup.fixedRelativePosition = true;
+						feature.popup = popup;
+						map.addPopup(popup);
+					}
+				}
+			}
+			function onPopupFeatureUnselect(feature) {
+				// if the feature being un-hovered-over is not the user
+				if (feature.attributes.userFeature == false) {
+					if (feature.attributes.Type != "0" && feature.attributes.Type != "1" && feature.attributes.Type != "2") {
+						// remove the popup
+						map.removePopup(feature.popup);
+						feature.popup.destroy();
+						feature.popup = null;
+					}
+					
+					// reactivate the drag listener so the user marker (the blue marker) can be dragged
+					drag.activate();
+				} else {
+					search();
+				}
+			}
 
-            var map = new ol.Map({
-                target: 'map',
-                renderer: 'canvas',
-                layers: [
-                    new ol.layer.Tile({
-                        source: new ol.source.MapQuest({
-                            layer: 'osm'
-                        })
-                    })
-                ],
-                view: new ol.View({
-                    maxZoom: 18,
-                    center: ol.proj.transform([ -86.9080556, 40.4258333], 'EPSG:4326', 'EPSG:3857'),
-                    zoom: 15
-                })
-            });
-
-            var overlay = createOverlay(true, false);
-            map.addOverlay(overlay);
-
-            map.on('click', function(event) {
-                var coordinate = event.coordinate;
-                setCoordinateAndShow(coordinate);
-            });
-
-            $('#stopEvent, #insertFirst').on('click', function(){
-                var stopEvent = $('#stopEvent').is(':checked');
-                var insertFirst = $('#insertFirst').is(':checked');
-
-                var prevPos = overlay.getPosition();
-                map.removeOverlay(overlay);
-                overlay = createOverlay(stopEvent, insertFirst);
-                map.addOverlay(overlay);
-
-                setCoordinateAndShow(prevPos);
-            });
+			
 </script>
 
 </body>
