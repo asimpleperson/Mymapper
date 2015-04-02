@@ -148,20 +148,22 @@
         <!-- script for checkbox -->
         <script language="javascript">
 
-var names = new Array("hotel", "library", "gasStation");
-var ranges = new Array ("");
+
+var hotel = "hotel";
+var library = "library";
+var gasStation = "gasStation"; 
 var range = "0.804672";
 var userlat = "0";
 var userlon = "0";        
         
 var hotel_search = "TypeChoice=" + hotel + "&RangeChoice=" + range + "&userLat=" + userlat + "&userLon=" + userlon;
-var hotel_display = hotel + " within "+ range;
+var hotel_display = "TypeChoice=" + hotel + "&RangeChoice=" + range + "&userLat=" + userlat + "&userLon=" + userlon;
 
 var library_search = "TypeChoice=" + library + "&RangeChoice=" + "0.804672" + "&userLat=" + userlat + "&userLon=" + userlon;
-var library_display = library + " within " + range;
+var library_display = "TypeChoice=" + library + "&RangeChoice=" + "0.804672" + "&userLat=" + userlat + "&userLon=" + userlon;
 
 var gasStation_search = "TypeChoice=" + gasStation + "&RangeChoice=" + "3.21869" + "&userLat=" + userlat + "&userLon=" + userlon;
-var gasStation_display = gasStation + " within " + range;
+var gasStation_display = "TypeChoice=" + gasStation + "&RangeChoice=" + "3.21869" + "&userLat=" + userlat + "&userLon=" + userlon;
 
 var search_option = new Array(hotel_search, library_search, gasStation_search); 
 var display_option = new Array(hotel_display, library_display, gasStation_display); 
@@ -187,7 +189,12 @@ function createchkboxes()
         var last = alabel[alabel.length - 1];
         label.htmlFor = "display_option_"+i;
         label.appendChild(Createcheckbox("display_option_"+i, display_option[i]));
-        label.appendChild(document.createTextNode(display_option[i]));
+        
+
+        var end_index = display_option[i].search("&RangeChoice=");
+        var display_text = display_option[i].substring(11, end_index)+" ";
+        
+        label.appendChild(document.createTextNode(display_text));
         label.appendChild(br);
         document.getElementById('div1').appendChild(label);               
     }
@@ -203,9 +210,9 @@ function Createcheckbox(chkboxid, chkboxvalue) {
         ischecked = ischecked+1;     
             if (ischecked%2==0){
                 alert("you just cliked on "+checkbox.value);
-				var length = search_option.length;
+                var length = display_option.length;
 				for (var i = 0; i < length; i++) {
-					if(search_option[i]== checkbox.value){
+					if(display_option[i]== checkbox.value){
 						alert("find value"+checkbox.value);
 						search_option.push(checkbox.value);
 						alert("search_option now is "+ search_option.toString());
