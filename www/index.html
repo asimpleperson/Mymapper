@@ -148,8 +148,23 @@
         <!-- script for checkbox -->
         <script language="javascript">
 
-var search_option = new Array("Hotel - 2 miles", "Library - 1 mile", "Gas Station - 0.5 mile"); 
-var checkBox_option = new Array("Hotel - 2 miles", "Library - 1 mile", "Gas Station - 0.5 mile"); 
+var names = new Array("hotel", "library", "gasStation");
+var ranges = new Array ("");
+var range = "0.804672";
+var userlat = "0";
+var userlon = "0";        
+        
+var hotel_search = "TypeChoice=" + hotel + "&RangeChoice=" + range + "&userLat=" + userlat + "&userLon=" + userlon;
+var hotel_display = hotel + " within "+ range;
+
+var library_search = "TypeChoice=" + library + "&RangeChoice=" + "0.804672" + "&userLat=" + userlat + "&userLon=" + userlon;
+var library_display = library + " within " + range;
+
+var gasStation_search = "TypeChoice=" + gasStation + "&RangeChoice=" + "3.21869" + "&userLat=" + userlat + "&userLon=" + userlon;
+var gasStation_display = gasStation + " within " + range;
+
+var search_option = new Array(hotel_search, library_search, gasStation_search); 
+var display_option = new Array(hotel_display, library_display, gasStation_display); 
 
 
 
@@ -163,16 +178,16 @@ function createchkboxes()
        div.removeChild(child);
     }
 
-    var length = search_option.length;
+    var length = display_option.length;
     alert("number of registered queries = "+length);
     for (var i = 0; i < length; i++) {
         var label = document.createElement('label');
         var br = document.createElement('br');
         var alabel = document.getElementById('div1');
         var last = alabel[alabel.length - 1];
-        label.htmlFor = "search_option_"+i;
-        label.appendChild(Createcheckbox("search_option_"+i, search_option[i]));
-        label.appendChild(document.createTextNode(search_option[i]));
+        label.htmlFor = "display_option_"+i;
+        label.appendChild(Createcheckbox("display_option_"+i, display_option[i]));
+        label.appendChild(document.createTextNode(display_option[i]));
         label.appendChild(br);
         document.getElementById('div1').appendChild(label);               
     }
@@ -188,9 +203,9 @@ function Createcheckbox(chkboxid, chkboxvalue) {
         ischecked = ischecked+1;     
             if (ischecked%2==0){
                 alert("you just cliked on "+checkbox.value);
-				var length = checkBox_option.length;
+				var length = search_option.length;
 				for (var i = 0; i < length; i++) {
-					if(checkBox_option[i]== checkbox.value){
+					if(search_option[i]== checkbox.value){
 						alert("find value"+checkbox.value);
 						search_option.push(checkbox.value);
 						alert("search_option now is "+ search_option.toString());
