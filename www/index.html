@@ -138,7 +138,88 @@
 				<input type="text" id="tags" name="customsearch" value="">
 				<br>
 		</div>
+        
+        <!-- Form to hold checkbox-->
+        <form>
+            <input type="button" id="btncreate" value="Create" onclick="createchkboxes()"/>
+            <div id='div1'> Checkbox goes here </div>
+        </form>
 
+        <!-- script for checkbox -->
+        <script language="javascript">
+
+var search_option = new Array("Hotel - 2 miles", "Library - 1 mile", "Gas Station - 0.5 mile"); 
+var checkBox_option = new Array("Hotel - 2 miles", "Library - 1 mile", "Gas Station - 0.5 mile"); 
+
+
+
+//create boxes according to the string passed to this function
+function createchkboxes()
+{
+    //first delete all before creating
+    
+    var div = document.getElementById('div1'), child;
+    while(child = div.firstChild){
+       div.removeChild(child);
+    }
+
+    var length = search_option.length;
+    alert("number of registered queries = "+length);
+    for (var i = 0; i < length; i++) {
+        var label = document.createElement('label');
+        var br = document.createElement('br');
+        var alabel = document.getElementById('div1');
+        var last = alabel[alabel.length - 1];
+        label.htmlFor = "search_option_"+i;
+        label.appendChild(Createcheckbox("search_option_"+i, search_option[i]));
+        label.appendChild(document.createTextNode(search_option[i]));
+        label.appendChild(br);
+        document.getElementById('div1').appendChild(label);               
+    }
+}
+
+function Createcheckbox(chkboxid, chkboxvalue) {
+    var ischecked = 0;//even value means unchecked, odd value means checked
+    var checkbox = document.createElement('input');
+    checkbox.type = "checkbox";
+	checkbox.checked = "yes";
+    
+    checkbox.onclick = function(){
+        ischecked = ischecked+1;     
+            if (ischecked%2==0){
+                alert("you just cliked on "+checkbox.value);
+				var length = checkBox_option.length;
+				for (var i = 0; i < length; i++) {
+					if(checkBox_option[i]== checkbox.value){
+						alert("find value"+checkbox.value);
+						search_option.push(checkbox.value);
+						alert("search_option now is "+ search_option.toString());
+					}
+				}	
+            }
+            else{
+                alert("you just unclicked on "+checkbox.value);
+				var length = search_option.length;
+				for (var i = 0; i < length; i++) {
+					if(search_option[i]== checkbox.value){
+						alert("find value"+checkbox.value);
+						search_option.splice(i, 1);
+						alert("search_option now is "+ search_option.toString());
+					}
+				}
+			
+            }
+    };
+   
+           
+    checkbox.id = chkboxid;
+    checkbox.value = chkboxvalue;
+    return checkbox;
+}
+
+
+
+</script>
 
     
 				<!--Search Button-->
