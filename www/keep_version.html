@@ -140,6 +140,7 @@
     
             <!-- Form to hold checkbox-->
             <form>
+				<input type="button" id="btncreate" value="Create" onclick="createchkboxes()"/>
                 <div id='div1'> Checkbox goes here </div>
             </form>
 
@@ -241,7 +242,7 @@
     
     
             <!--Search Button-->
-            <button type="button" class="btn btn-default btn-lg" onclick=" createchkboxes(); search(); ">Search</button>
+            <button type="button" class="btn btn-default btn-lg" onclick="search(); ">Search</button>
 
             <input type="hidden" name="userLat" id="userLat" />
             <input type="hidden" name="userLon" id="userLon" />
@@ -305,7 +306,7 @@
 				
                 var responseText = xmlHttp.responseText;
                 var points = responseText.split( "\n" );
-                //poiLayer.removeAllFeatures();
+                poiLayer.removeAllFeatures();
                 poiLayer.addFeatures(userLoc);
                 for (var i = 0; i < points.length; ++i) {
                     if (points[i] != "") {
