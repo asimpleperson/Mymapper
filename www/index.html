@@ -28,13 +28,15 @@
 <script src="js/bootstrap-select.js"></script>
 
 <title>jQuery UI Autocomplete - Default functionality</title>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-  <link rel="stylesheet" href="/resources/demos/style.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"></link>
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="/resources/demos/style.css"></link>
 
 
 </head>
+
+<body onload="initialize()">
 
 <script>
 	
@@ -55,9 +57,8 @@
 	
 </script>
 
-</script>
 
-  <script>
+<script>
   $(function() {
     var availableTags = [
       "Restaurant",
@@ -76,378 +77,375 @@
       source: availableTags
     });
   });
-  </script>
-
-<body onload="initialize()">
-
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-            
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand">CS490</a>
-        </div>
-
-        <!-- Collect the search options -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-  
-            <form id = "SearchForm" class="navbar-form navbar-left" method="post">
-                <div class="form-group">
-                    <input type="hidden" id="TypeChoice" name="TypeChoice" value="" />
-
-                        <select id = "TypeSelect" class="form-control" name="select-type-of-interest" onchange="dropdownTest(this.value)">
-                            <option value="defaultopts" id="defaultopts">--Type of interests--</option>
-                            <option value="restaurant" id="restaurant">Restaurant</option>
-                            <option value="fast_food" id="fast_food">Fast Food</option>
-                            <option value="library" id="library">Library</option>
-                            <option value="school" id="school">School</option>
-                            <option value="supermarket" id="supermarket">Grocery Store</option>
-                            <option value="hotel" id="hotel">Hotel</option>
-                            <option value="fuel" id="fuel">Gas Station</option>
-                            <option value="parking" id="parking">Parking Lot</option>
-							<option value="police" id="police">Police Car</option>
-							<option value="bus" id="bus">Bus</option>
-							<option value="taxi" id="taxi">Taxi</option>
-                        </select>
-                </div>
-    
-				
-        
-            
-                <div class="form-group">
-                    <input type="hidden" id="RangeChoice" name="RangeChoice" value=" " />
-
-                            <select id = "RangeSelect" class="form-control" name="select-range" onchange="dropdownTest(this.value)">
-                            <option value="defaultopts" selected>--Range--</option>
-                            <option value="0.804672">Within half a Mile</option>
-                            <option value="1.60934">Within 1 Mile</option>
-                            <option value="3.21869">Within 2 Miles</option>
-                        </select>
-                </div>
-
-		 <div class="form-group">
-		Customize your search:<br>
-                </div>
-
-		<div class="form-group">
-				<input type="text" id="tags" name="customsearch" value="">
-				<br>
-		</div>
-        
-        <!-- Form to hold checkbox-->
-        <form>
-            <input type="button" id="btncreate" value="Create" onclick="createchkboxes()"/>
-            <div id='div1'> Checkbox goes here </div>
-        </form>
-
-        <!-- script for checkbox -->
-        <script language="javascript">
-
-var names = new Array("hotel", "library", "gasStation");
-var ranges = new Array ("");
-var range = "0.804672";
-var userlat = "0";
-var userlon = "0";        
-        
-var hotel_search = "TypeChoice=" + hotel + "&RangeChoice=" + range + "&userLat=" + userlat + "&userLon=" + userlon;
-var hotel_display = hotel + " within "+ range;
-
-var library_search = "TypeChoice=" + library + "&RangeChoice=" + "0.804672" + "&userLat=" + userlat + "&userLon=" + userlon;
-var library_display = library + " within " + range;
-
-var gasStation_search = "TypeChoice=" + gasStation + "&RangeChoice=" + "3.21869" + "&userLat=" + userlat + "&userLon=" + userlon;
-var gasStation_display = gasStation + " within " + range;
-
-var search_option = new Array(hotel_search, library_search, gasStation_search); 
-var display_option = new Array(hotel_display, library_display, gasStation_display); 
-
-
-
-//create boxes according to the string passed to this function
-function createchkboxes()
-{
-    //first delete all before creating
-    
-    var div = document.getElementById('div1'), child;
-    while(child = div.firstChild){
-       div.removeChild(child);
-    }
-
-    var length = display_option.length;
-    alert("number of registered queries = "+length);
-    for (var i = 0; i < length; i++) {
-        var label = document.createElement('label');
-        var br = document.createElement('br');
-        var alabel = document.getElementById('div1');
-        var last = alabel[alabel.length - 1];
-        label.htmlFor = "display_option_"+i;
-        label.appendChild(Createcheckbox("display_option_"+i, display_option[i]));
-        label.appendChild(document.createTextNode(display_option[i]));
-        label.appendChild(br);
-        document.getElementById('div1').appendChild(label);               
-    }
-}
-
-function Createcheckbox(chkboxid, chkboxvalue) {
-    var ischecked = 0;//even value means unchecked, odd value means checked
-    var checkbox = document.createElement('input');
-    checkbox.type = "checkbox";
-	checkbox.checked = "yes";
-    
-    checkbox.onclick = function(){
-        ischecked = ischecked+1;     
-            if (ischecked%2==0){
-                alert("you just cliked on "+checkbox.value);
-				var length = search_option.length;
-				for (var i = 0; i < length; i++) {
-					if(search_option[i]== checkbox.value){
-						alert("find value"+checkbox.value);
-						search_option.push(checkbox.value);
-						alert("search_option now is "+ search_option.toString());
-					}
-				}	
-            }
-            else{
-                alert("you just unclicked on "+checkbox.value);
-				var length = search_option.length;
-				for (var i = 0; i < length; i++) {
-					if(search_option[i]== checkbox.value){
-						alert("find value"+checkbox.value);
-						search_option.splice(i, 1);
-						alert("search_option now is "+ search_option.toString());
-					}
-				}
-			
-            }
-    };
-   
-           
-    checkbox.id = chkboxid;
-    checkbox.value = chkboxvalue;
-    return checkbox;
-}
-
-
-
 </script>
 
-    
-				<!--Search Button-->
-				<button type="button" class="btn btn-default btn-lg" onclick="search()">Search</button>
-				
-				<input type="hidden" name="userLat" id="userLat" />
-				<input type="hidden" name="userLon" id="userLon" />
-				
-				<input type="hidden" name="prevZoom" id ="prevZoom" value="" />
-				
-				<input type="hidden" name="prevCenterLon" id="prevCentLon" value="" />
-				
-				<input type="hidden" name="prevCenterLat" id="prevCentLat" value="" />
-				
-				<script>				
-				
-					function search() {
-						// this function is called when the user hits submit
-						
-						//Get the user input. If it is empty or not a valid input, pick the selection from the select list. If it is a valid 						input, change typeValue to this input value  
-						var result=document.getElementById("tags").value;
-						var bol=0;
-						var typeSelect = document.getElementById("TypeSelect");
-						var typeValue;
-						var len=typeSelect.length;
-						var theValue;
-							for(var i=0;i<len;i++)
-						{
-							if(typeSelect.options[i].text == result)
-							{
-								bol=1;
-								theValue=typeSelect.options[i].value;
-							}
-						}
-						if(result.length<1 || bol == 0){
-							typeValue = typeSelect.options[typeSelect.selectedIndex].value;
-						}else{
-							typeValue = theValue ;
-						}
-
-						if (typeValue == "police" || typeValue == "taxi" || typeValue == "bus") {
-							movingSearch = true;
-						} else {
-							movingSearch = false;
-						}
-						
-						// assign the range the user chose to the hidden input "RangeChoice"
-						var rangeSelect = document.getElementById("RangeSelect");
-						var rangeValue = rangeSelect.options[rangeSelect.selectedIndex].value;
-						
-						// get the user's current location
-						var tempPos = new OpenLayers.LonLat( position.lon , position.lat ).transform(toProjection, fromProjection);
-			
-						
-						// query the servlet for the information requested
-						var xmlHttp = new XMLHttpRequest();
-						xmlHttp.open( "POST", "ServletTest", false );						
-						var params = "TypeChoice=" + typeValue + "&RangeChoice=" + rangeValue + "&userLat=" + tempPos.lat + "&userLon=" + tempPos.lon;
-						xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");						
-						xmlHttp.send( params );
-						
-						var responseText = xmlHttp.responseText;
-						var points = responseText.split( "\n" );
-						poiLayer.removeAllFeatures();
-						poiLayer.addFeatures(userLoc);
-						for (var i = 0; i < points.length; ++i) {
-							if (points[i] != "") {
-								//console.log("found response: \"" + points[i] + "\"\n");
-								var line = points[i];
-								var fields = line.split("~");
-								if (fields.length == 3) {
-									var poiName = "";
-									var poiType = fields[0];
-									var poiLat = fields[1];
-									var poiLon = fields[2];
-								} else if (fields.length == 4) {
-									var poiName = fields[0];
-									var poiType = fields[1];
-									var poiLat = fields[2];
-									var poiLon = fields[3];							
-								}
-								
-								var tempLoc = new OpenLayers.LonLat( poiLon , poiLat ).transform( fromProjection, toProjection);
-								var tempPoint = new OpenLayers.Geometry.Point( tempLoc.lon, tempLoc.lat );
-								
-								
-								if (typeValue == "police" || typeValue == "taxi" || typeValue == "bus") {
-									var poiFeature = new OpenLayers.Feature.Vector(tempPoint, {userFeature: false, Name:poiName, Type:poiType}, {externalGraphic: "img/" + typeValue + ".png", graphicHeight: 25, graphicWidth: 25});
-								} else {
-									var poiFeature = new OpenLayers.Feature.Vector(tempPoint, {userFeature: false, Name:poiName, Type:poiType}, {externalGraphic: "img/" + typeValue + ".png", graphicHeight: 16, graphicWidth: 16});
-								}
-								
-								poiLayer.addFeatures(poiFeature);
-							}
-						}
-						
-						// submit the form, which reloads the page and queries the database based on the information saved to the hidden parameters
-						// the user's location, map's zoom, and map's center is saved and restored on submission
-						//var form = document.getElementById("SearchForm");
-						//form.submit();
-					}
-					
-					window.setInterval(function() {
-						if (movingSearch) {
-							search();
-						}
-					}, 1000);
-				</script>
-			</form> 
+<div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
         
-            <!--
-            <button type="button" class="btn btn-default btn-lg" onclick="testloc()">Loc test 1</button>
-            <button type="button" class="btn btn-default brn-lg" onclick="hideMarkers()">Hide test</button>
-            <button type="button" class="btn btn-default brn-lg" onclick="eventTest()">Event test</button>    
-            -->
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand">CS490</a>
+    </div>
+
+    <!-- Collect the search options -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+        <form id = "SearchForm" class="navbar-form navbar-left" method="post">
+            <div class="form-group">
+                <input type="hidden" id="TypeChoice" name="TypeChoice" value="" />
+
+                    <select id = "TypeSelect" class="form-control" name="select-type-of-interest" onchange="dropdownTest(this.value)">
+                        <option value="defaultopts" id="defaultopts">--Type of interests--</option>
+                        <option value="restaurant" id="restaurant">Restaurant</option>
+                        <option value="fast_food" id="fast_food">Fast Food</option>
+                        <option value="library" id="library">Library</option>
+                        <option value="school" id="school">School</option>
+                        <option value="supermarket" id="supermarket">Grocery Store</option>
+                        <option value="hotel" id="hotel">Hotel</option>
+                        <option value="fuel" id="fuel">Gas Station</option>
+                        <option value="parking" id="parking">Parking Lot</option>
+                        <option value="police" id="police">Police Car</option>
+                        <option value="bus" id="bus">Bus</option>
+                        <option value="taxi" id="taxi">Taxi</option>
+                    </select>
+            </div>
+
+            
+    
+        
+            <div class="form-group">
+                <input type="hidden" id="RangeChoice" name="RangeChoice" value=" " />
+
+                        <select id = "RangeSelect" class="form-control" name="select-range" onchange="dropdownTest(this.value)">
+                        <option value="defaultopts" selected>--Range--</option>
+                        <option value="0.804672">Within half a Mile</option>
+                        <option value="1.60934">Within 1 Mile</option>
+                        <option value="3.21869">Within 2 Miles</option>
+                    </select>
+            </div>
+
+            <div class="form-group">
+            Customize your search:<br>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="tags" name="customsearch" value="">
+                <br>
+            </div>
+    
+            <!-- Form to hold checkbox-->
+            <form>
+                <input type="button" id="btncreate" value="Create" onclick="createchkboxes()"/>
+                <div id='div1'> Checkbox goes here </div>
+            </form>
+
+            <!-- script for checkbox -->
+            <script language="javascript">
+
+            var hotel = "hotel";
+            var library = "library";
+            var gasStation = "gasStation"; 
+            var range = "0.804672";
+            var userlat = "0";
+            var userlon = "0";        
+                    
+            var hotel_search = "TypeChoice=" + hotel + "&RangeChoice=" + range + "&userLat=" + userlat + "&userLon=" + userlon;
+            var hotel_display = "TypeChoice=" + hotel + "&RangeChoice=" + range + "&userLat=" + userlat + "&userLon=" + userlon;
+
+            var library_search = "TypeChoice=" + library + "&RangeChoice=" + "0.804672" + "&userLat=" + userlat + "&userLon=" + userlon;
+            var library_display = "TypeChoice=" + library + "&RangeChoice=" + "0.804672" + "&userLat=" + userlat + "&userLon=" + userlon;
+
+            var gasStation_search = "TypeChoice=" + gasStation + "&RangeChoice=" + "3.21869" + "&userLat=" + userlat + "&userLon=" + userlon;
+            var gasStation_display = "TypeChoice=" + gasStation + "&RangeChoice=" + "3.21869" + "&userLat=" + userlat + "&userLon=" + userlon;
+
+            var search_option = new Array(hotel_search, library_search, gasStation_search); 
+            var display_option = new Array(hotel_display, library_display, gasStation_display); 
+
+
+
+            //create boxes according to the string passed to this function
+            function createchkboxes()
+            {
+                //first delete all before creating
+                
+                var div = document.getElementById('div1'), child;
+                while(child = div.firstChild){
+                   div.removeChild(child);
+                }
+
+                var length = display_option.length;
+                alert("number of registered queries = "+length);
+                for (var i = 0; i < length; i++) {
+                    var label = document.createElement('label');
+                    var br = document.createElement('br');
+                    var alabel = document.getElementById('div1');
+                    var last = alabel[alabel.length - 1];
+                    label.htmlFor = "display_option_"+i;
+                    label.appendChild(Createcheckbox("display_option_"+i, display_option[i]));
+                    
+
+                    var end_index = display_option[i].search("&RangeChoice=");
+                    var display_text = display_option[i].substring(11, end_index)+" ";
+                    
+                    label.appendChild(document.createTextNode(display_text));
+                    label.appendChild(br);
+                    document.getElementById('div1').appendChild(label);               
+                }
+            }
+
+            function Createcheckbox(chkboxid, chkboxvalue) {
+                var ischecked = 0;//even value means unchecked, odd value means checked
+                var checkbox = document.createElement('input');
+                checkbox.type = "checkbox";
+                checkbox.checked = "yes";
+                
+                checkbox.onclick = function(){
+                    ischecked = ischecked+1;     
+                        if (ischecked%2==0){
+                            alert("you just cliked on "+checkbox.value);
+                            var length = display_option.length;
+                            for (var i = 0; i < length; i++) {
+                                if(display_option[i]== checkbox.value){
+                                    alert("find value"+checkbox.value);
+                                    search_option.push(checkbox.value);
+                                    alert("search_option now is "+ search_option.toString());
+                                }
+                            }	
+                        }
+                        else{
+                            alert("you just unclicked on "+checkbox.value);
+                            var length = search_option.length;
+                            for (var i = 0; i < length; i++) {
+                                if(search_option[i]== checkbox.value){
+                                    alert("find value"+checkbox.value);
+                                    search_option.splice(i, 1);
+                                    alert("search_option now is "+ search_option.toString());
+                                }
+                            }
+                        
+                        }
+                };
+               
+                       
+                checkbox.id = chkboxid;
+                checkbox.value = chkboxvalue;
+                return checkbox;
+            }
+            
+            </script>
+
+    
+            <!--Search Button-->
+            <button type="button" class="btn btn-default btn-lg" onclick="search()">Search</button>
+
+            <input type="hidden" name="userLat" id="userLat" />
+            <input type="hidden" name="userLon" id="userLon" />
+
+            <input type="hidden" name="prevZoom" id ="prevZoom" value="" />
+
+            <input type="hidden" name="prevCenterLon" id="prevCentLon" value="" />
+
+            <input type="hidden" name="prevCenterLat" id="prevCentLat" value="" />
+				
+            <script>				
+
+            function search() {
+                // this function is called when the user hits submit
+                
+                //Get the user input. If it is empty or not a valid input, pick the selection from the select list. If it is a valid 						input, change typeValue to this input value  
+                var result=document.getElementById("tags").value;
+                var bol=0;
+                var typeSelect = document.getElementById("TypeSelect");
+                var typeValue;
+                var len=typeSelect.length;
+                var theValue;
+                    for(var i=0;i<len;i++)
+                {
+                    if(typeSelect.options[i].text == result)
+                    {
+                        bol=1;
+                        theValue=typeSelect.options[i].value;
+                    }
+                }
+                if(result.length<1 || bol == 0){
+                    typeValue = typeSelect.options[typeSelect.selectedIndex].value;
+                }else{
+                    typeValue = theValue ;
+                }
+
+                if (typeValue == "police" || typeValue == "taxi" || typeValue == "bus") {
+                    movingSearch = true;
+                } else {
+                    movingSearch = false;
+                }
+                
+                // assign the range the user chose to the hidden input "RangeChoice"
+                var rangeSelect = document.getElementById("RangeSelect");
+                var rangeValue = rangeSelect.options[rangeSelect.selectedIndex].value;
+                
+                // get the user's current location
+                var tempPos = new OpenLayers.LonLat( position.lon , position.lat ).transform(toProjection, fromProjection);
+
+                
+                // query the servlet for the information requested
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.open( "POST", "ServletTest", false );						
+                var params = "TypeChoice=" + typeValue + "&RangeChoice=" + rangeValue + "&userLat=" + tempPos.lat + "&userLon=" + tempPos.lon;
+                xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");						
+                xmlHttp.send( params );
+                
+                var responseText = xmlHttp.responseText;
+                var points = responseText.split( "\n" );
+                poiLayer.removeAllFeatures();
+                poiLayer.addFeatures(userLoc);
+                for (var i = 0; i < points.length; ++i) {
+                    if (points[i] != "") {
+                        //console.log("found response: \"" + points[i] + "\"\n");
+                        var line = points[i];
+                        var fields = line.split("~");
+                        if (fields.length == 3) {
+                            var poiName = "";
+                            var poiType = fields[0];
+                            var poiLat = fields[1];
+                            var poiLon = fields[2];
+                        } else if (fields.length == 4) {
+                            var poiName = fields[0];
+                            var poiType = fields[1];
+                            var poiLat = fields[2];
+                            var poiLon = fields[3];							
+                        }
+                        
+                        var tempLoc = new OpenLayers.LonLat( poiLon , poiLat ).transform( fromProjection, toProjection);
+                        var tempPoint = new OpenLayers.Geometry.Point( tempLoc.lon, tempLoc.lat );
+                        
+                        
+                        if (typeValue == "police" || typeValue == "taxi" || typeValue == "bus") {
+                            var poiFeature = new OpenLayers.Feature.Vector(tempPoint, {userFeature: false, Name:poiName, Type:poiType}, {externalGraphic: "img/" + typeValue + ".png", graphicHeight: 25, graphicWidth: 25});
+                        } else {
+                            var poiFeature = new OpenLayers.Feature.Vector(tempPoint, {userFeature: false, Name:poiName, Type:poiType}, {externalGraphic: "img/" + typeValue + ".png", graphicHeight: 16, graphicWidth: 16});
+                        }
+                        
+                        poiLayer.addFeatures(poiFeature);
+                    }
+                }
+                
+                // submit the form, which reloads the page and queries the database based on the information saved to the hidden parameters
+                // the user's location, map's zoom, and map's center is saved and restored on submission
+                //var form = document.getElementById("SearchForm");
+                //form.submit();
+            }
+            
+            window.setInterval(function() {
+                if (movingSearch) {
+                    search();
+                }
+            }, 1000);
+            </script>
+		</form> 
+        
        
         </div><!--end of collapse navbar-collapse-->   
-    </div><!-- end of container-fluid -->
+</div><!-- end of container-fluid -->
 
-    <div id="map"></div>
+<div id="map"></div>
 
 
 <script type="text/javascript">
 			
-			// create the map
-			map = new OpenLayers.Map("map");
-			// add the base layer to the map, using OpenLayer's map images
-			// this can be changed to use GoogleMap's images, or MapQuest images, etc
-			map.addLayer(new OpenLayers.Layer.OSM());
-			
-	
-			map.setCenter( position, zoom );
+// create the map
+map = new OpenLayers.Map("map");
+// add the base layer to the map, using OpenLayer's map images
+// this can be changed to use GoogleMap's images, or MapQuest images, etc
+map.addLayer(new OpenLayers.Layer.OSM());
 
-			
-			// create a point for the user's location and add it to the poiLayer
-			var point = new OpenLayers.Geometry.Point( position.lon, position.lat );
-			var userLoc = new OpenLayers.Feature.Vector(point, {userFeature: true}, {externalGraphic: 'img/marker.png', graphicHeight: 25, graphicWidth: 16});
-			poiLayer.addFeatures(userLoc);
-			
-			// add the poiLayer to the map on top of the base layer
-			map.addLayer(poiLayer);
-			
-			// define a drag listener for poiLayer
-			var drag=new OpenLayers.Control.DragFeature(poiLayer,{    
-				 'onDrag':function(feature, pixel){
-						// if the feature that's being dragged is the user (the blue marker, not a red marker)
-						if (feature.attributes.userFeature == true) {
-							// drag the user's position
-							//position = new OpenLayers.LonLat( feature.geometry.x  , feature.geometry.y ).transform( toProjection, fromProjection);
-							//position = new OpenLayers.LonLat( feature.geometry.x  , feature.geometry.y ).transform( fromProjection, toProjection );
-							position = new OpenLayers.LonLat( feature.geometry.x  , feature.geometry.y );
-						}
-				 }
-			});
-			
-			var click
-			
-			// define a select listener for poiLayer, if a feature is hovered over, call onPopupFeatureSelect(), if it's un-hovered-over, call onPopupFeatureUnselect()
-			var selectControl  = new OpenLayers.Control.SelectFeature(poiLayer,{				
-				onSelect: onPopupFeatureSelect,
-				onUnselect: onPopupFeatureUnselect,
-				hover: true
-			});
-			
-			// add the drag listener to the map
-			map.addControl(drag);
-			drag.activate();
-			
-			// add the select listener to the map
-			map.addControl(selectControl );
-			selectControl.activate();
-			
-			
-			function onPopupFeatureSelect(feature) {
-				// if the feature being hovered-over is not the user
-				if (feature.attributes.userFeature == false) {
-					// don't let static markers be dragged by disabling the drag listener when a static marker is selected
-					drag.deactivate();
-					
-					if (feature.attributes.Type != "0" && feature.attributes.Type != "1" && feature.attributes.Type != "2") {
-						// display a pop-up that lists the location's name and type
-						var popup = new OpenLayers.Popup.FramedCloud("popup",
-							OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
-							null,
-							"Name: " + feature.attributes.Name + "<br>Type: " + feature.attributes.Type,
-							null,
-							true,
-							null
-						);
-						popup.autoSize = true;
-						popup.maxSize = new OpenLayers.Size(400,800);
-						popup.fixedRelativePosition = true;
-						feature.popup = popup;
-						map.addPopup(popup);
-					}
-				}
-			}
-			function onPopupFeatureUnselect(feature) {
-				// if the feature being un-hovered-over is not the user
-				if (feature.attributes.userFeature == false) {
-					if (feature.attributes.Type != "0" && feature.attributes.Type != "1" && feature.attributes.Type != "2") {
-						// remove the popup
-						map.removePopup(feature.popup);
-						feature.popup.destroy();
-						feature.popup = null;
-					}
-					
-					// reactivate the drag listener so the user marker (the blue marker) can be dragged
-					drag.activate();
-				} else {
-					search();
-				}
-			}
+
+map.setCenter( position, zoom );
+
+
+// create a point for the user's location and add it to the poiLayer
+var point = new OpenLayers.Geometry.Point( position.lon, position.lat );
+var userLoc = new OpenLayers.Feature.Vector(point, {userFeature: true}, {externalGraphic: 'img/marker.png', graphicHeight: 25, graphicWidth: 16});
+poiLayer.addFeatures(userLoc);
+
+// add the poiLayer to the map on top of the base layer
+map.addLayer(poiLayer);
+
+// define a drag listener for poiLayer
+var drag=new OpenLayers.Control.DragFeature(poiLayer,{    
+     'onDrag':function(feature, pixel){
+            // if the feature that's being dragged is the user (the blue marker, not a red marker)
+            if (feature.attributes.userFeature == true) {
+                // drag the user's position
+                //position = new OpenLayers.LonLat( feature.geometry.x  , feature.geometry.y ).transform( toProjection, fromProjection);
+                //position = new OpenLayers.LonLat( feature.geometry.x  , feature.geometry.y ).transform( fromProjection, toProjection );
+                position = new OpenLayers.LonLat( feature.geometry.x  , feature.geometry.y );
+            }
+     }
+});
+
+var click
+
+// define a select listener for poiLayer, if a feature is hovered over, call onPopupFeatureSelect(), if it's un-hovered-over, call onPopupFeatureUnselect()
+var selectControl  = new OpenLayers.Control.SelectFeature(poiLayer,{				
+    onSelect: onPopupFeatureSelect,
+    onUnselect: onPopupFeatureUnselect,
+    hover: true
+});
+
+// add the drag listener to the map
+map.addControl(drag);
+drag.activate();
+
+// add the select listener to the map
+map.addControl(selectControl );
+selectControl.activate();
+
+
+function onPopupFeatureSelect(feature) {
+    // if the feature being hovered-over is not the user
+    if (feature.attributes.userFeature == false) {
+        // don't let static markers be dragged by disabling the drag listener when a static marker is selected
+        drag.deactivate();
+        
+        if (feature.attributes.Type != "0" && feature.attributes.Type != "1" && feature.attributes.Type != "2") {
+            // display a pop-up that lists the location's name and type
+            var popup = new OpenLayers.Popup.FramedCloud("popup",
+                OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
+                null,
+                "Name: " + feature.attributes.Name + "<br>Type: " + feature.attributes.Type,
+                null,
+                true,
+                null
+            );
+            popup.autoSize = true;
+            popup.maxSize = new OpenLayers.Size(400,800);
+            popup.fixedRelativePosition = true;
+            feature.popup = popup;
+            map.addPopup(popup);
+        }
+    }
+}
+function onPopupFeatureUnselect(feature) {
+    // if the feature being un-hovered-over is not the user
+    if (feature.attributes.userFeature == false) {
+        if (feature.attributes.Type != "0" && feature.attributes.Type != "1" && feature.attributes.Type != "2") {
+            // remove the popup
+            map.removePopup(feature.popup);
+            feature.popup.destroy();
+            feature.popup = null;
+        }
+        
+        // reactivate the drag listener so the user marker (the blue marker) can be dragged
+        drag.activate();
+    } else {
+        search();
+    }
+}
 
 			
 </script>
