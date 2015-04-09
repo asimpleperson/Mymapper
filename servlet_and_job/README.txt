@@ -20,3 +20,7 @@ To change MovingActorsQueryJob, follow these steps:
 - if it compiled without error, stop the server by sshing onto sslab01 and running the command: "/homes/bpastene/cs490/apache-tomcat-7.0.59/bin/shutdown.sh"
 - then start the server: "/homes/bpastene/cs490/apache-tomcat-7.0.59/bin/startup.sh"
 - wait a minute for the server to start back up, and your changes should be live
+
+
+To Do: create a TweetQueryJob.java that is identical to MovingActorsQueryJob in every way, but it quries MySQL for tweets, not moving objects.
+Once that's done, change LocationServlet to use this new spark app to respond to any twitter queries.
